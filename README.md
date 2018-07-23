@@ -1,4 +1,4 @@
-#### Reliability Engineering Exercise
+## Reliability Engineering Exercise
 
 This is a simple application for the Spring Reliability Engineering exercise. To see my answers to the questions, head over to the [Questions](/Questions.md).
 
