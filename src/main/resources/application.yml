@@ -8,7 +8,7 @@ management.endpoints.web.exposure.include: "*"
 management.metrics:
     export:
       datadog:
-        api-key: 7f8084eb7ab847777920f1eb67f48e42
+        api-key: ${DATADOG_API_KEY}
         step: 10s
     distribution:
       percentiles[http.server.requests]: 0.50, 0.75, 0.95, 0.99
