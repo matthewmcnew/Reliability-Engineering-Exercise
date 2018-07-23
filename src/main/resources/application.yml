@@ -1,0 +1,15 @@
+server.port: 8081
+spring.cache:
+  type: redis
+  redis.time-to-live: 1m
+
+management.endpoints.web.exposure.include: "*"
+
+management.metrics:
+    export:
+      datadog:
+        api-key: 7f8084eb7ab847777920f1eb67f48e42
+        step: 10s
+    distribution:
+      percentiles[http.server.requests]: 0.50, 0.75, 0.95, 0.99
+      percentiles-histogram[http.server.requests]: true
