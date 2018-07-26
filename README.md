@@ -13,6 +13,9 @@ This application uses [DataDog](https://www.datadoghq.com/) as a monitoring solu
 # If you don't have redis
 brew install redis
 
+# or you can use docker
+docker-compose up -d 
+
 export DATADOG_API_KEY=YOUR_API_KEY
 
 ./gradlew bootRun
