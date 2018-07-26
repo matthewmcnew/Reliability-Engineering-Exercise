@@ -43,9 +43,9 @@ To recreate this behavior in a load test an endpoint was created that irregularl
 
 ![Mean Above 99](images/meanabove99.png)
 
-Notice the graph shows that the average (gray line) usually remains above even the purple 99th percentile. This is the result of the orange line which represents the max latency and is an order of magnitude greater than the 99th percentile and the average latency. (The graph is on a logarithmic scale.) In a more realistic scenario the max latency would not be so static.
+Notice the graph shows that the average (gray line) usually remains above even the purple 99th percentile. This is the result of the orange line which represents the max latency and is an order of magnitude greater than the 99th percentile and the average latency. (The graph is on a logarithmic scale.) In a more realistic scenario, the max latency would not be so static.
 
-For reference the throughput graph across the same period is shown below.
+For reference, the throughput graph across the same period is shown below.
 
 ![Throughput](images/throughput.png)
 
@@ -55,13 +55,13 @@ The [load test](MeanAbove99.jmx) for this scenario executes one thread group wit
 
 ### 2. Periodic and regular spikes in throughput and latency.
 
-*(Note: the following is a purely theoretical situation that most likely was not the cause of the sample graphs for this excerise.)*  
+*(Note: the following is a purely theoretical situation that most likely was not the cause of the sample graphs for this exercise.)*  
 
-In order to recreate this behavior a Spring Webflux app is used that has a simulated caching layer. The vast majority of requests do not need the cache or even use a value found in the cache. A small subset of requests are ‘cache misses’ that require additional processing or an expensive network lookup.
+In order to recreate this behavior, a Spring Webflux app is used that has a simulated caching layer. The vast majority of requests do not need the cache or even use a value found in the cache. A small subset of requests are ‘cache misses’ that require additional processing or an expensive network lookup.
 
-To simulate the irregular ‘cache miss’ a spring caching layer with a Redis backend is utilized. A time to live (ttl) on the cache is set to 1 minute. During the load test values will regularly expire in the cache and require ‘cache miss’ lookups. A 20 second `Thread.sleep` is added to the the code path that is executed when a lookup is required. This thread sleep obviously delays the response of the request that hits the ‘cache miss’. However, the thread pause has implications for other requests.
+To simulate the irregular ‘cache miss’ a spring caching layer with a Redis backend is utilized. A time to live (ttl) on the cache is set to 1 minute. During the load test values will regularly expire in the cache and require ‘cache miss’ lookups. A 20 second `Thread.sleep` is added to the code path that is executed when a lookup is required. This thread sleep obviously delays the response of the request that hits the ‘cache miss’. However, the thread pause has implications for other requests.
 
-Spring Webflux utilizes an intentionally small number of threads and achieves powerful concurrency by relying on the reactive paradigm and nonblocking I/O. The thread sleep is a blocking operation that prevents the thread from processing new or existing requests. In this simulated setup a queue of requests begins to build up on the thread with the thread sleep. In a real Webflux application, blocking network calls, database lookups, or even computationally expensive operations could achieve the same result and completely exhaust a thread.
+Spring Webflux utilizes an intentionally small number of threads and achieves powerful concurrency by relying on the reactive paradigm and nonblocking I/O. The thread sleep is a blocking operation that prevents the thread from processing new or existing requests. In this simulated setup, a queue of requests begins to build upon the thread with the thread sleep. In a real Webflux application, blocking network calls, database lookups, or even computationally expensive operations could achieve the same result and completely exhaust a thread.
 
 When the cache miss and thread sleep is over the thread can process the backed up requests. Because the application was unable to process these requests while they were waiting the ‘waiting time’ is not included in the time measurement or the throughput calculation. The application quickly works through the requests in the queue and includes them in the monitoring calculations. This flurry of requests may result in the spikes in throughput. This behavior is evident in the sample graphs shown below generated from a simplistic load test. 
 
@@ -69,9 +69,13 @@ When the cache miss and thread sleep is over the thread can process the backed u
 
 Notice the periodic spikes in throughput are correlated with massive spikes in max latency. 
 
+In this example, the mean is not typically higher than the 99th percentile. However, It would be possible in the future to adjust the ratios to generate a mean that is higher than the 99th percentile. A graph of the mean and the 99th percentile is shown below. 
+
+![Mean and 99](images/meanand99.png)
+
 **The Load Test**
 
-The [load test](SpikesInThroughput.jmx) for this scenario executes two thread groups. One thread group consistently polls the ‘/cache-lookup’ endpoint that occasionally triggers a cache miss and simulates a subset of traffic that occasionally requires expensive thread blocking operations. Another thread group simulates consistent high volume and quick low latency traffic by hitting the "/no-lookup" endpoint. Because calls to this endpoint may be stuck waiting for the the expensive operation to finish, the http calls in this thread group have low timeouts.  
+The [load test](SpikesInThroughput.jmx) for this scenario executes two thread groups. One thread group consistently polls the ‘/cache-lookup’ endpoint that occasionally triggers a cache miss and simulates a subset of traffic that occasionally requires expensive thread blocking operations. Another thread group simulates consistent high volume and quick low latency traffic by hitting the "/no-lookup" endpoint. Because calls to this endpoint may be stuck waiting for the expensive operation to finish, the HTTP calls in this thread group have low timeouts.  
 
 ### Todos
 
