@@ -6,17 +6,20 @@ However, a review of the latency graph shows that peaks in the max latency corre
 
 **What kind of latency distribution might lead to a situation where percentile values (even those as high as the 99th) are generally lower than the mean?**
 
-A distribution with a few extreme outliers could result in a mean higher than upper percentiles. A[ Long Tail Distribution](https://en.wikipedia.org/wiki/Long_tail) like this could likely occur in a latency distribution. If the vast majority of requests have a small latency but, one or a few requests occur with a large latency the overall mean of that distribution could be significantly higher than the 99th percentile. 
+A distribution with a few extreme outliers could result in a mean higher than upper percentiles. A[ Long Tail Distribution](https://en.wikipedia.org/wiki/Long_tail) like this could likely occur in a latency distribution. If the vast majority of requests have a small latency but, one or a few requests occur with a large latency the overall mean of that distribution could be significantly higher than the 99th percentile. A simple JUnit test that shows this is mathematically possible is available [here](https://github.com/matthewmcnew/Reliability-Engineering-Exercise/blob/master/src/test/java/com/mattcnew/reliability/LatencyDistribution.java).
 
 An analysis of the latency graph shows that this is likely what is occurring in the graphs. The latency graph utilizes a logarithmic scale.  The maximum latency is as high as 100ms and stays well above 1ms. However, the 75th, 95th, and even the 99th percentile remain below 1ms. This likely would result in the mean climbing above the 99th percentile. This is exactly what is happening for a significant portion of the graph.
 
 **What kinds of conditions (either resource or semantic) might cause such a distribution in a Java application?**
 
-A Java application may cause a latency distribution to result in a higher mean than the 99th percentile when a small set of requests have an extreme increase in latency. These maximum latency requests may be caused by a wide variety of issues including networking delays, scheduling or garbage collection hiccups, occasionally computationally expensive code paths or even cache misses that require additional processing. 
+A Java application may cause a latency distribution to result in a higher mean than the 99th percentile when a small set of requests have an extreme increase in latency. These maximum latency requests may be caused by a wide variety of issues including networking delays, scheduling or garbage collection hiccups, occasionally computationally expensive code paths or even cache misses that require additional processing.
 
 The latency and throughput graphs shown in the example appear to have seasonal or periodic throughput and latency spikes. This might be the result of a form of coordinated omission where one or a few requests exhaust an application’s resources preventing it from taking on any new requests. As the application works through the expensive requests that are exhausting system resources a queue of new requests might build up. Because the application is unable to process these requests the ‘waiting time’ is not included in the time measurement. When the exhaustive requests finish, the application quickly works through the requests in the queue and includes them in the throughput calculations. This possible flurry in requests might be the result of the spikes in the throughput graph. 
 
 This application behavior could occur when an application’s request processing threads are easily exhausted preventing the application from having the ability to process new requests. Although this could occur in many different setups it is easy to imagine in an application that is using Spring Webflux because Webflux intentionally utilizes a small number of threads. A misuse of blocking I/O or a computationally expensive task could starve the application from processing other requests. 
+
+[A simulated example of both of these scenarios is discussed in the project's readme](https://github.com/matthewmcnew/Reliability-Engineering-Exercise#background)
+
 
 **How might you design and train an anomaly detection algorithm for this distribution?**
 
