@@ -31,3 +31,5 @@ An approach more resistant to outliers would be to utilize the Median Absolute D
 Unfortunately, both of these approaches are unable to detect anomalies relative to seasonal patterns or long-term trends. A more sophisticated algorithm would need to be used that was capable of forecasting seasonal patterns and trends. One possible technique is a[ seasonal trend decomposition algorithm](https://en.wikipedia.org/wiki/Decomposition_of_time_series) that could be used to decompose the recent time series into a seasonal component, a trend, and a noise component. These learned components would be able to forecast new values with knowledge of the seasonality and the overall trend. The algorithm could flag samples as anomalous if they were outside a predetermined tolerance for the forecasted value.
 
 **Build a simple application and load test that exhibits a distribution like you’ve predicted, and plot its throughput and latency.**
+
+[That is this repo right here!](https://github.com/matthewmcnew/Reliability-Engineering-Exercise)
