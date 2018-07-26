@@ -21,6 +21,14 @@ export DATADOG_API_KEY=YOUR_API_KEY
 curl http://localhost:8081/actuator/metrics
 ```
 
+##### Load Tests
+
+For simplicity and explainability, load tests were constructed in JMeter. In the future, this project will likely include Gatling load tests as well.  
+
+```bash
+jmeter -n -t <LOAD-TEST>.jmx -Jhost=<HOST-OF-APP> -Jport=<PORT-OF-APP>
+```
+
 ## Background
 
 This repo is an example of a simple Spring application that might exhibit two specific latency and throughput behaviors.
@@ -41,6 +49,10 @@ For reference the throughput graph across the same period is shown below.
 
 ![Throughput](images/throughput.png)
 
+**The Load Test**
+
+The [load test](MeanAbove99.jmx) for this scenario executes one thread group with multiple threads that consistently polls the "/occasional-image-processing" endpoint. 
+
 ### 2. Periodic and regular spikes in throughput and latency.
 
 *(Note: the following is a purely theoretical situation that most likely was not the cause of the sample graphs for this excerise.)*  
@@ -59,7 +71,7 @@ Notice the periodic spikes in throughput are correlated with massive spikes in m
 
 **The Load Test**
 
-For simplicity and explainability, load tests were constructed in JMeter. In the future, this project will likely include Gatling load tests as well.  The load tests executed two thread groups, consistently polling the ‘/cache-lookup’ endpoint that occasionally triggers a cache miss as well as the ‘/no-lookup’ endpoint that consistently responds with low latency.
+The [load test](SpikesInThroughput.jmx) for this scenario executes two thread groups. One thread group consistently polls the ‘/cache-lookup’ endpoint that occasionally triggers a cache miss and simulates a subset of traffic that occasionally requires expensive thread blocking operations. Another thread group simulates consistent high volume and quick low latency traffic by hitting the "/no-lookup" endpoint. Because calls to this endpoint may be stuck waiting for the the expensive operation to finish, the http calls in this thread group have low timeouts.  
 
 ### Todos
 
