@@ -79,7 +79,3 @@ In this example, the mean is not typically higher than the 99th percentile. Howe
 **The Load Test**
 
 The [load test](SpikesInThroughput.jmx) for this scenario executes two thread groups. One thread group consistently polls the ‘/cache-lookup’ endpoint that occasionally triggers a cache miss and simulates a subset of traffic that occasionally requires expensive thread blocking operations. Another thread group simulates consistent high volume and quick low latency traffic by hitting the "/no-lookup" endpoint. Because calls to this endpoint may be stuck waiting for the expensive operation to finish, the HTTP calls in this thread group have low timeouts.  
-
-### Todos
-
-Setup docker-compose to enable ease of running locally.
