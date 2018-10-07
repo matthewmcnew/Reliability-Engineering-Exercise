@@ -1,4 +1,7 @@
+
 **Based on the throughput graph, what do you think traffic looks like to this service? Is it relatively constant or bursty? Regular or irregular?**
+
+teeest
 
 The graph appears to show a major spike in throughput from 12:23 to 12:30. After 12:30, the throughput graph implies a bursty traffic pattern on a predictable regular periodic cadence. Approximately, every minute the graph implies that there is a 4x spike in throughput.
 
